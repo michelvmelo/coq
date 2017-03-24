@@ -561,13 +561,18 @@ Fixpoint exp (base power : nat) : nat :=
 
     Translate this into Coq. *)
 
-Fixpoint factorial (n:nat) : nat
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint factorial (n:nat) : nat :=
+  match n with
+  | O => 1
+  | S n' => mult (S n') (factorial n')
+  end.
 
 Example test_factorial1:          (factorial 3) = 6.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
+
+
 Example test_factorial2:          (factorial 5) = (mult 10 12).
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 (** [] *)
 
 (** We can make numerical expressions a little easier to read and
@@ -641,15 +646,17 @@ Proof. simpl. reflexivity.  Qed.
     yielding a [b]oolean.  Instead of making up a new [Fixpoint] for
     this one, define it in terms of a previously defined function. *)
 
-Definition blt_nat (n m : nat) : bool
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition blt_nat (n m : nat) : bool :=
+  if (leb n m) && negb (beq_nat n m)
+  then true
+  else false.
 
 Example test_blt_nat1:             (blt_nat 2 2) = false.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed. 
 Example test_blt_nat2:             (blt_nat 2 4) = true.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 Example test_blt_nat3:             (blt_nat 4 2) = false.
-(* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -818,8 +825,16 @@ Proof.
 
 Theorem plus_id_exercise : forall n m o : nat,
   n = m -> m = o -> n + m = m + o.
-Proof.
-  (* FILL IN HERE *) Admitted.
+Proof. 
+  intros n m o. 
+  intro H1. 
+  intro H2. 
+  rewrite -> H1. 
+  rewrite <- H2. 
+  reflexivity. 
+Qed.  
+
+
 (** [] *)
 
 (** The [Admitted] command tells Coq that we want to skip trying
@@ -851,7 +866,12 @@ Theorem mult_S_1 : forall n m : nat,
   m = S n ->
   m * (1 + n) = m * m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m.
+  intro H1.
+  rewrite -> plus_1_l.
+  rewrite <- H1.
+  reflexivity.
+Qed.
 
 (* (N.b. This proof can actually be completed without using [rewrite],
    but please do use [rewrite] for the sake of the exercise.) *)
@@ -1062,14 +1082,31 @@ Qed.
 Theorem andb_true_elim2 : forall b c : bool,
   andb b c = true -> c = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b c.
+  intro H1.
+  destruct b.
+  - destruct c.
+    + reflexivity.
+    + rewrite <- H1.
+      reflexivity.
+  - destruct c.
+    + reflexivity.
+    + rewrite <- H1.
+      reflexivity.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 1 star (zero_nbeq_plus_1)  *)
 Theorem zero_nbeq_plus_1 : forall n : nat,
   beq_nat 0 (n + 1) = false.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intro n.
+  destruct n.
+  - reflexivity.
+  - reflexivity.
+Qed.
+
 (** [] *)
 
 (* ================================================================= *)
@@ -1150,7 +1187,12 @@ Fixpoint plus' (n : nat) (m : nat) : nat :=
     _does_ terminate on all inputs, but that Coq will reject because
     of this restriction. *)
 
-(* FILL IN HERE *)
+Fixpoint return_nat (n : nat) : nat :=
+  match n with
+  | O => O
+  | S n' => S n'
+  end.
+
 (** [] *)
 
 (* ################################################################# *)
@@ -1165,13 +1207,36 @@ Theorem identity_fn_applied_twice :
   (forall (x : bool), f x = x) ->
   forall (b : bool), f (f b) = b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros f x b.
+  destruct b.
+  - rewrite -> x.
+    rewrite -> x.
+    reflexivity.
+  - rewrite -> x.
+    rewrite -> x.
+    reflexivity.
+Qed.
 
 (** Now state and prove a theorem [negation_fn_applied_twice] similar
     to the previous one but where the second hypothesis says that the
     function [f] has the property that [f x = negb x].*)
 
-(* FILL IN HERE *)
+Theorem negation_fn_applied_twice :
+  forall (f : bool -> bool),
+  (forall (x : bool), f x = negb x) ->
+  forall (b : bool), f (f b) = b.
+Proof.
+  intros f x b.
+  destruct b.
+  - rewrite -> x.
+    rewrite -> x.
+    simpl.
+    reflexivity.
+  - rewrite -> x.
+    rewrite -> x.
+    simpl.
+    reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (andb_eq_orb)  *)
@@ -1179,11 +1244,23 @@ Proof.
     subsidiary lemma or two. Alternatively, remember that you do
     not have to introduce all hypotheses at the same time.) *)
 
+Lemma com_eq : forall (b c : bool), (b = c) <-> (c = b).
+Proof. Abort.
+
+
 Theorem andb_eq_orb :
   forall (b c : bool),
   (andb b c = orb b c) ->
   b = c.
 Proof.
+  intro b.
+  destruct b.
+  - simpl.
+    
+
+
+  
+  
   (* FILL IN HERE *) Admitted.
 (** [] *)
 
