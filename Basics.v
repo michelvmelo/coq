@@ -1244,24 +1244,24 @@ Qed.
     subsidiary lemma or two. Alternatively, remember that you do
     not have to introduce all hypotheses at the same time.) *)
 
-Lemma com_eq : forall (b c : bool), (b = c) <-> (c = b).
-Proof. Abort.
-
-
 Theorem andb_eq_orb :
   forall (b c : bool),
   (andb b c = orb b c) ->
   b = c.
 Proof.
-  intro b.
+  intros b.
+  intro.
   destruct b.
-  - simpl.
-    
+  - intro.
+    simpl in H.
+    rewrite H.
+    reflexivity.
+  - intro.
+    simpl in H.
+    apply H.
+Qed.
 
 
-  
-  
-  (* FILL IN HERE *) Admitted.
 (** [] *)
 
 (** **** Exercise: 3 starsM (binary)  *)
@@ -1302,7 +1302,79 @@ Proof.
         then converting it to unary should yield the same result as
         first converting it to unary and then incrementing. *)
 
-(* FILL IN HERE *)
+Inductive bin: Type :=
+  | Z : bin
+  | T : bin -> bin
+  | P : bin -> bin.
+  
+Fixpoint incr (b: bin): bin :=
+  match b with
+  | Z => P Z
+  | T b' => P b'
+  | P b' => T (incr b')
+  end.
+  
+Fixpoint bin_to_nat (b: bin) : nat :=
+  match b with
+  | Z => O
+  | T b' => bin_to_nat b' + bin_to_nat b'
+  | P b' => S (bin_to_nat b')
+  end.
+  
+Example test_bin_incr1: incr Z = P Z.
+Proof.
+  simpl.
+   reflexivity.
+Qed.
+
+Example test_bin_incr2: incr (P Z) = T (P Z).
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+  
+Example test_bin_incr3: incr (T (P Z)) = (P (P Z)).
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Example test_bin_incr4: incr (P (P Z)) = T (T (P Z)).
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Example test_bin_incr5: incr (T (T (P Z))) = P (T (P Z)).
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Example test_bin_nat1: bin_to_nat Z = O.
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Example test_bin_nat2: bin_to_nat (P Z) = S O.
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+  
+Example test_bin_nat3: bin_to_nat (T (P Z)) = S (S O).
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Example test_bin_nat4: bin_to_nat (incr (P Z)) = plus (bin_to_nat (P Z)) 1.
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
 (** [] *)
 
 (** $Date: 2016-11-22 16:39:52 -0500 (Tue, 22 Nov 2016) $ *)
