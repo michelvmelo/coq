@@ -552,18 +552,23 @@ Theorem mult_plus_distr_r : forall n m p : nat,
   (n + m) * p = (n * p) + (m * p).
 Proof.
   intros n m p.
-Abort.
+  induction n; simpl.
+  - reflexivity.
+  - rewrite IHn.
+    rewrite plus_assoc.
+    reflexivity.
+Qed.
 
 Theorem mult_assoc : forall n m p : nat,
   n * (m * p) = (n * m) * p.
 Proof.
   intros n m p.
-  induction p.
-  - repeat rewrite <- mult_n_O.
+  induction n; simpl.
+  - reflexivity.
+  - rewrite IHn.
+    rewrite mult_plus_distr_r.
     reflexivity.
-  - repeat rewrite <- mult_n_Sm.
-    rewrite <- IHp.
-Abort.
+Qed.
 
 (** [] *)
 
@@ -577,7 +582,11 @@ Abort.
 Theorem beq_nat_refl : forall n : nat,
   true = beq_nat n n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intro n.
+  induction n; simpl.
+  - reflexivity.
+  - assumption.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (plus_swap')  *)
@@ -593,7 +602,13 @@ Proof.
 Theorem plus_swap' : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  repeat rewrite plus_assoc.
+  replace (n + m) with (m + n).
+  - reflexivity.
+  - apply plus_comm.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 3 stars, recommendedM (binary_commute)  *)
@@ -621,7 +636,26 @@ Proof.
     definitions to make the property easier to prove, feel free to
     do so! *)
 
-(* FILL IN HERE *)
+Fixpoint bin_to_nat_d (b : bin) : nat :=
+  match b with
+  | Z => O
+  | T b' => double (bin_to_nat_d b')
+  | P b' => S (double (bin_to_nat_d b'))
+  end.
+
+Theorem bin_to_nat_pres_incr : forall b : bin, 
+  S (bin_to_nat_d b) = bin_to_nat_d (incr b).
+Proof.
+  intro b.
+  induction b; simpl.
+  - reflexivity.
+  - reflexivity.
+  - rewrite <- IHb.
+    reflexivity.
+Qed.
+    
+
+
 (** [] *)
 
 (** **** Exercise: 5 stars, advancedM (binary_inverse)  *)
